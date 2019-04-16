@@ -1,0 +1,129 @@
+<div class="wrapper ">
+  <app-land-sidebar></app-land-sidebar>
+  <!--  Mid section  -->
+  <div class="main-panel">
+    <!-- Navbar -->
+    <app-land-nav></app-land-nav>
+    <!-- End Navbar -->
+    <div class="content">
+      <div class="container-fluid">
+        <div class="heading">
+          <h3>Request Details</h3>
+        </div>
+        <!-- Filter Data Functionality :Start -->
+        <form [formGroup]="searchForm" (ngSubmit)="onSearch()">
+          <div class="tenantListBtn fullwidth paddB30">
+            <div class="searchDiv ">
+              <div class="form-group">
+                <input type="text" class="form-control" formControlName="searchData"
+                  placeholder="Search by Name/Property">
+              </div>
+              <div class="form-group">
+                <span class="selectDiv">
+                  <select class='select-option' required [(ngModel)]='optionSelect'
+                    (ngModelChange)='onOptionSelected($event)' formControlName="optionSelect">
+                    <option [ngValue]="undefined"> Please select one status </option>
+                    <option class='option' *ngFor='let option of options' [value]="option">{{option}}</option>
+                  </select>
+                  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </span>
+                <button [disabled]="loading" class="btn btn-primary">Search</button>
+                <img *ngIf="loading"
+                  src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+              </div>
+            </div>
+          </div>
+        </form>
+        <!-- Filter Data Functionality :End -->
+        <!-- Show Request Details List :Start -->
+        <div class="tableDIv">
+          <div class="card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table">
+                  <thead class=" text-primary">
+                    <tr>
+                      <th>Name</th>
+                      <th>Property</th>
+                      <th>Phone</th>
+                      <th>Email</th>
+                      <th>Unit Type</th>
+                      <th>Action</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let items of data | paginate: config ; let i=index">
+                      <td>{{items.userName}}</td>
+                      <td>{{items.propertyName}}</td>
+                      <td>{{items.phone}}</td>
+                      <td>{{items.email}}</td>
+                      <td>{{items.unitType}}</td>
+                      <td>
+                        <div class="dropdown" *ngIf="items.status==0">
+                          <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenu2"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Action
+                          </button>
+                          <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                            <button class="dropdown-item dropMenu" type="button"
+                              (click)="accept_decline_request_status(items,'accept')">
+                              Accept</button>
+                            <button class="dropdown-item dropMenu" type="button"
+                              (click)="accept_decline_request_status(items,'decline')" (click)="rowIndex(i);">
+                              Decline</button>
+                            <button class="dropdown-item dropMenu" type="button"
+                              (click)="deleteRequestStatus(items.id,i)" (click)="rowIndex(i);">
+                              Delete</button>
+                          </div>
+                        </div>
+                        <button *ngIf="items.status!=0" class="btn btn-warning" type="button"
+                          (click)="deleteRequestStatus(items.id,i,items.status)">
+                          Delete</button>
+                      </td>
+                      <td>
+                        <p *ngIf="(items.status == 1)" class="text text-primary">Accepted</p>
+                        <p *ngIf="(items.status == 2 )" class="text text-danger">Declined</p>
+                        <p *ngIf="(items.status == 0 )" class="text text-warning">Pending</p>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Show Request Details List :End -->
+      </div>
+      <!-- Pagination Control :Start -->
+      <div>
+        <pagination-controls (pageChange)="pageChanged($event)"></pagination-controls>
+      </div>
+      <!-- Pagination Control :End -->
+    </div>
+    <footer class="footer">
+      <div class="container-fluid">
+      </div>
+    </footer>
+  </div>
+  <!-- min end section -->
+</div>
+<!-- Delete Modal - Confirmation start  -->
+<div id="deleteModal" class="modal fade">
+  <div class="modal-dialog modal-confirm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title delete">Are you sure?</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Do you want to Delete the request status</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="deleteRequestStatusConfiramtion();">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Delete Modal - Confirmation end -->
